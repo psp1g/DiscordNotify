@@ -21,3 +21,8 @@ jobs:
         run: |
           ./gradlew build
           ./gradlew shadowJar
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiscordNotify
+          path: "build/libs/*-all.jar"
