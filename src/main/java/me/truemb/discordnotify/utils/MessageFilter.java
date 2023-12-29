@@ -1,6 +1,7 @@
 package me.truemb.discordnotify.utils;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class MessageFilter {
                 .collect(
                         Collectors.toMap(
                                 Emoji::getName,
-                                RichCustomEmoji::getAsReactionCode,
+                                CustomEmoji::getAsMention,
                                 (e1, e2) -> e1
                         )
                 );
@@ -67,7 +68,5 @@ public class MessageFilter {
 
         return filteredMessage;
     }
-
-
 
 }
