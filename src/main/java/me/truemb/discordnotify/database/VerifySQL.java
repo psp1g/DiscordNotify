@@ -38,8 +38,9 @@ public class VerifySQL {
 	}
 	
 	public void setVerfied(UUID mcuuid, String ingameName, long disuuid){
-		instance.getAsyncMySql().queryUpdate("INSERT INTO " + this.table + " (mcuuid, ingamename, disuuid) VALUES ('" + mcuuid.toString() + "', '" + ingameName + "', '" + String.valueOf(disuuid) + "') "
-				+ "ON DUPLICATE KEY UPDATE ingamename=ingamename;");
+		instance.getAsyncMySql().queryUpdate("INSERT INTO " + this.table + " (mcuuid, ingamename, disuuid) VALUES (?,?,?) "
+				+ "ON DUPLICATE KEY UPDATE ingamename=?;",
+			mcuuid.toString(), ingameName, Long.toString(disuuid), ingameName);
 	}
 	
 	//code = CONCAT(code, '_standard')
@@ -51,20 +52,20 @@ public class VerifySQL {
 		if(s.length() >= 2)
 			s = s.substring(2, s.length());
 		
-		instance.getAsyncMySql().queryUpdate("UPDATE " + this.table + " SET roles='" + s + "'  WHERE mcuuid='" + mcuuid.toString() + "';");
+		instance.getAsyncMySql().queryUpdate("UPDATE " + this.table + " SET roles=?  WHERE mcuuid=?;", s, mcuuid.toString());
 	}
 	
 	public void deleteVerification(UUID mcuuid){
-		instance.getAsyncMySql().queryUpdate("DELETE FROM " + this.table + " WHERE mcuuid='" + mcuuid.toString() + "';");
+		instance.getAsyncMySql().queryUpdate("DELETE FROM " + this.table + " WHERE mcuuid=?;", mcuuid.toString());
 	}
 	
 	public void deleteVerification(long disUUID){
-		instance.getAsyncMySql().queryUpdate("DELETE FROM " + this.table + " WHERE disuuid='" + String.valueOf(disUUID) + "';");
+		instance.getAsyncMySql().queryUpdate("DELETE FROM " + this.table + " WHERE disuuid=?;", Long.toString(disUUID));
 	}
 	
 	public void checkIfAlreadyVerified(DiscordManager discordManager, DiscordBotCommand cmd, Member member, UUID mcuuid) {
 		
-		instance.getAsyncMySql().prepareStatement("SELECT * FROM " + this.table + " WHERE mcuuid='" + mcuuid + "';", new Consumer<ResultSet>() {
+		instance.getAsyncMySql().prepareStatement("SELECT * FROM " + this.table + " WHERE mcuuid=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -108,13 +109,13 @@ public class VerifySQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, mcuuid.toString());
 	}
 	
 	public void acceptVerification(DiscordManager discordManager, UUID uuid, String ingameName) {
 		long disuuid = this.instance.getVerifyManager().getVerficationProgress(uuid);
 		
-		instance.getAsyncMySql().prepareStatement("SELECT * FROM " + this.table + " WHERE mcuuid='" + uuid + "' OR disuuid ='" + String.valueOf(disuuid) + "';", new Consumer<ResultSet>() {
+		instance.getAsyncMySql().prepareStatement("SELECT * FROM " + this.table + " WHERE mcuuid=? OR disuuid=?;", new Consumer<ResultSet>() {
 
 			@Override
 			public void accept(ResultSet rs) {
@@ -227,7 +228,7 @@ public class VerifySQL {
 					e.printStackTrace();
 				}
 			}
-		});
+		}, uuid.toString(), Long.toString(disuuid));
 	}
 	
 	public void setupVerifications() {

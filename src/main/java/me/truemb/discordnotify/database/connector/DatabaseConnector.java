@@ -63,19 +63,22 @@ public class DatabaseConnector {
 		}
 	}
 
-	public ResultSet query(String query) {
+	public ResultSet query(String query, String... args) {
 		checkConnection();
 		try {
-			return query(conn.prepareStatement(query));
+			return query(conn.prepareStatement(query), args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public ResultSet query(PreparedStatement statement) {
+	public ResultSet query(PreparedStatement statement, String... args) {
 		checkConnection();
 		try {
+			for (int i = 0; i < args.length; i++) {
+				statement.setString(i + 1, args[i]);
+			}
 			return statement.executeQuery();
 		} catch (Exception e) {
 			e.printStackTrace();

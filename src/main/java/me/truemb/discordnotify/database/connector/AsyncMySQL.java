@@ -84,9 +84,9 @@ public class AsyncMySQL {
 		});
 	}
 
-	public void prepareStatement(String statement, Consumer<ResultSet> consumer) {
+	public void prepareStatement(String statement, Consumer<ResultSet> consumer, String... args) {
 		this.executor.execute(() -> {
-			ResultSet result = this.sql.query(statement);
+			ResultSet result = this.sql.query(statement, args);
 			new Thread(() -> consumer.accept(result)).start();
 		});
 	}
