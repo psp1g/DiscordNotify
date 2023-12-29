@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import me.truemb.discordnotify.utils.MessageFilter;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import org.spicord.bot.DiscordBot;
 
 import club.minnced.discord.webhook.WebhookClient;
@@ -279,7 +281,8 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 		placeholder.put("server", serverName);
 		
 		
-		switch (this.instance.getConfigManager().getMessageType(FeatureType.PlayerJoinLeave)) {	
+		switch (this.instance.getConfigManager().getMessageType(FeatureType.PlayerJoinLeave)) {
+	
 			case MESSAGE: {
 				try {
 					this.instance.getDiscordManager().sendDiscordMessage(Long.parseLong(channelId), "PlayerLeaveMessage", placeholder);
@@ -351,9 +354,11 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 		//Server should not send Messages
 		if(channelId == null || channelId.equals("") || channelId.equals("-1"))
 			return;
-			
+
+		List<RichCustomEmoji> emojis = this.instance.getDiscordManager().getCurrentGuild().getEmojis();
+
 		HashMap<String, String> placeholder = new HashMap<>();
-		placeholder.put("Message", message);
+		placeholder.put("Message", MessageFilter.filterDiscordMessage(message, emojis));
 		placeholder.put("Player", up.getIngameName());
 		placeholder.put("UUID", uuid.toString());
 		placeholder.put("group", group == null ? "" : group);
