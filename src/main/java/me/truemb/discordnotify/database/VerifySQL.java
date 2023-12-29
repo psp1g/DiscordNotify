@@ -143,7 +143,7 @@ public class VerifySQL {
 						member = guild.retrieveMemberById(disuuid).complete();
 
 					String verfiedGroupS = instance.getConfigManager().getConfig().getString("Options." + FeatureType.Verification.toString() +  ".discordRole");
-					List<Role> verifyRoles = discordBot.getJda().getRolesByName(verfiedGroupS, true);
+					List<Role> verifyRoles = guild.getRolesByName(verfiedGroupS, true);
 					if(verifyRoles.size() <= 0)
 						return;
 					

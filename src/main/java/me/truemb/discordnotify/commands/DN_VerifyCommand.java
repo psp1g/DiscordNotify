@@ -9,6 +9,7 @@ import me.truemb.discordnotify.enums.FeatureType;
 import me.truemb.discordnotify.enums.GroupAction;
 import me.truemb.discordnotify.main.DiscordNotifyMain;
 import me.truemb.universal.player.UniversalPlayer;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -32,7 +33,7 @@ public class DN_VerifyCommand {
 		UUID uuid = up.getUUID();
 		
 		if(args.length == 1){
-					
+			
 			if(args[0].equalsIgnoreCase("unlink")) {
 				
 				if(!this.instance.getVerifyManager().isVerified(uuid)) {
@@ -46,16 +47,20 @@ public class DN_VerifyCommand {
 				}
 				
 				//UNLINK
+				long guildId = this.instance.getConfigManager().getConfig().getLong("Options.DiscordBot.ServerID");
+                Guild guild = this.instance.getDiscordManager().getDiscordBot().getJda().getGuildById(guildId);
 				long disuuid = this.instance.getVerifyManager().getVerfiedWith(uuid);
-				Member member = this.instance.getDiscordManager().getDiscordBot().getJda().getGuilds().get(0).getMemberById(disuuid);
+				Member member = guild.getMemberById(disuuid);
 				if(member == null)
-					member = this.instance.getDiscordManager().getDiscordBot().getJda().getGuilds().get(0).retrieveMemberById(disuuid).complete();
+					member = guild.retrieveMemberById(disuuid).complete();
 				
 				//REMOVE VERIFY ROLE
-				List<Role> verifyRoles = this.instance.getDiscordManager().getDiscordBot().getJda().getRolesByName(this.instance.getConfigManager().getConfig().getString("Options." + FeatureType.Verification.toString() + ".discordRole"), true);
-				if(verifyRoles.size() > 0) {
+				List<Role> verifyRoles = guild.getRolesByName(this.instance.getConfigManager().getConfig().getString("Options." + FeatureType.Verification.toString() + ".discordRole"), true);
+				if(!verifyRoles.isEmpty()) {
     				Role verifyRole = verifyRoles.get(0);
-    				verifyRole.getGuild().removeRoleFromMember(member, verifyRole).complete();
+					if(member.getRoles().contains(verifyRole)) {
+                        verifyRole.getGuild().removeRoleFromMember(member, verifyRole).complete();
+                    }
 				}
 				
 				//NICKNAME
