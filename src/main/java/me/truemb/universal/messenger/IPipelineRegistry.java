@@ -26,13 +26,13 @@ package me.truemb.universal.messenger;
 import me.truemb.discordnotify.main.DiscordNotifyMain;
 
 public interface IPipelineRegistry {
-
+    
     void receive(byte[] data);
-
+    
     IPipeline register(String channel);
     
     IPipeline registerAsync(DiscordNotifyMain plugin, String channel);
-
+    
     IPipeline getRegisteredPipeline(String channel);
     
     boolean isRegisteredPipeline(String channel);

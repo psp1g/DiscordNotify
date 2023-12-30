@@ -23,6 +23,9 @@
  */
 package me.truemb.universal.messenger;
 
+import lombok.SneakyThrows;
+import me.truemb.discordnotify.main.DiscordNotifyMain;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,19 +34,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import lombok.SneakyThrows;
-import me.truemb.discordnotify.main.DiscordNotifyMain;
-
 public class PipelineRegistryImpl implements IPipelineRegistry {
-
+    
     private final MessageChannelCore core;
     private final Map<String, IPipeline> pipelines;
-
+    
     public PipelineRegistryImpl(MessageChannelCore core) {
         this.core = core;
         this.pipelines = new HashMap<String, IPipeline>();
     }
-
+    
     @SneakyThrows(MessageChannelException.class)
     public IPipeline register(String channel) {
         if (!pipelines.containsKey(channel)) {
@@ -51,14 +51,14 @@ public class PipelineRegistryImpl implements IPipelineRegistry {
                 if (!pipelines.containsKey(channel)) {
                     IPipeline pipeline = new SyncPipeline(core, this, channel);
                     pipelines.put(channel, pipeline);
-
+                    
                     return pipeline;
                 }
             }
         }
         throw new MessageChannelException("Channel (" + channel + ") already has a registered pipeline!");
     }
-
+    
     @SneakyThrows(MessageChannelException.class)
     public IPipeline registerAsync(DiscordNotifyMain plugin, String channel) {
         if (!pipelines.containsKey(channel)) {
@@ -66,30 +66,30 @@ public class PipelineRegistryImpl implements IPipelineRegistry {
                 if (!pipelines.containsKey(channel)) {
                     IPipeline pipeline = new AsyncPipeline(plugin, core, this, channel);
                     pipelines.put(channel, pipeline);
-
+                    
                     return pipeline;
                 }
             }
         }
         throw new MessageChannelException("Channel (" + channel + ") already has a registered pipeline!");
     }
-
+    
     @SuppressWarnings("unchecked")
     @SneakyThrows(MessageChannelException.class)
     public final void receive(byte[] data) {
         try {
             ByteArrayInputStream bytes = new ByteArrayInputStream(data);
             ObjectInputStream input = new ObjectInputStream(bytes);
-
+            
             String channel = input.readUTF();
             UUID target = (UUID) input.readObject();
             List<Object> content = (List<Object>) input.readObject();
             
             input.close();
             bytes.close();
-
+            
             PipelineMessage message = new PipelineMessage(target, content);
-
+            
             synchronized (pipelines) {
                 if (pipelines.containsKey(channel)) {
                     pipelines.get(channel).post(message);
@@ -99,11 +99,11 @@ public class PipelineRegistryImpl implements IPipelineRegistry {
             throw new MessageChannelException("Failed to deserialize message: " + exception.getMessage());
         }
     }
-
+    
     public IPipeline getRegisteredPipeline(String channel) {
         return isRegisteredPipeline(channel) ? pipelines.get(channel) : null;
     }
-
+    
     public boolean isRegisteredPipeline(String channel) {
         return pipelines.containsKey(channel);
     }

@@ -24,8 +24,8 @@
 package me.truemb.universal.messenger;
 
 public interface IMessageChannel {
-
+    
     IPipelineRegistry getPipelineRegistry();
-
+    
     IRelay getRelay();
 }

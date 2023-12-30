@@ -26,12 +26,12 @@ package me.truemb.universal.messenger;
 import lombok.Getter;
 
 public class MessageChannelCore implements IMessageChannel {
-
+    
     @Getter
     private IRelay relay;
     @Getter
     private IPipelineRegistry pipelineRegistry;
-
+    
     public MessageChannelCore(IRelay relay) {
         this.relay = relay;
         this.pipelineRegistry = new PipelineRegistryImpl(this);

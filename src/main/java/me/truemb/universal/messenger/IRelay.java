@@ -24,10 +24,10 @@
 package me.truemb.universal.messenger;
 
 public interface IRelay {
-
+    
     boolean send(PipelineMessage message, byte[] data);
     
     boolean broadcast(PipelineMessage message, byte[] data);
-
+    
     boolean isProxy();
 }

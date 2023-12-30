@@ -23,27 +23,27 @@
  */
 package me.truemb.universal.messenger;
 
+import lombok.Getter;
+import lombok.SneakyThrows;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-
 public class PipelineMessage {
-
+    
     @Getter
     private final UUID target;
     @Getter
     private final String targetServer;
     private final List<Object> content;
     private int index;
-
+    
     public PipelineMessage() {
         this(null);
     }
-
+    
     public PipelineMessage(UUID target) {
         this(target, null, new ArrayList<Object>());
     }
@@ -55,18 +55,18 @@ public class PipelineMessage {
     public PipelineMessage(UUID target, List<Object> content) {
         this(target, null, content);
     }
-
+    
     public PipelineMessage(UUID target, String targetServer, List<Object> content) {
         this.target = target;
         this.targetServer = targetServer;
         this.content = content;
         this.index = 0;
     }
-
+    
     public void write(Object object) {
         content.add(object);
     }
-
+    
     public Object read() throws MessageChannelException {
         if (index >= content.size()) {
             throw new MessageChannelException("List of size " + content.size() + " could not read object at " + index);
@@ -75,7 +75,7 @@ public class PipelineMessage {
         index += 1;
         return object;
     }
-
+    
     @SneakyThrows(MessageChannelException.class)
     public <T> T read(Class<T> clazz) {
         Object object = read();
@@ -84,11 +84,11 @@ public class PipelineMessage {
         }
         throw new MessageChannelException("Could not cast " + object + " to class: " + clazz.getSimpleName());
     }
-
+    
     public PipelineMessage clone() {
         return new PipelineMessage(target, targetServer, content);
     }
-
+    
     public List<Object> getContents() {
         return Collections.unmodifiableList(content);
     }

@@ -26,9 +26,9 @@ package me.truemb.universal.messenger;
 import java.io.IOException;
 
 public class MessageChannelException extends IOException {
-
+    
     private static final long serialVersionUID = -5418147842059105040L;
-
+    
     public MessageChannelException(String message) {
         super(message);
     }

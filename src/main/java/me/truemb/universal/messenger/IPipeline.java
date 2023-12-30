@@ -26,13 +26,13 @@ package me.truemb.universal.messenger;
 import java.util.function.Consumer;
 
 public interface IPipeline {
-
+    
     void onReceive(Consumer<PipelineMessage> callable);
-
+    
     void send(PipelineMessage message);
-
+    
     void post(PipelineMessage message);
-
+    
     void broadcast(PipelineMessage message);
     
     boolean isAsync();

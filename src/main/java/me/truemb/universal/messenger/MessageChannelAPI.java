@@ -26,7 +26,7 @@ package me.truemb.universal.messenger;
 import lombok.Getter;
 
 public class MessageChannelAPI {
-
+    
     @Getter
     private static IMessageChannel core;
     private static final Object LOCK = new Object();
@@ -41,9 +41,9 @@ public class MessageChannelAPI {
             }
         }
         throw new MessageChannelException(
-                "The MessageChannelCore singleton instance has already been defined by another plugin!");
+            "The MessageChannelCore singleton instance has already been defined by another plugin!");
     }
-
+    
     public static IPipelineRegistry getPipelineRegistry() {
         return core.getPipelineRegistry();
     }
