@@ -138,7 +138,10 @@ public class DiscordNotifyMain {
 			this.discordManager = new DiscordManager(this);
 			this.discordManager.registerAddons(this.getConfigManager().getConfig().getString("Options.DiscordBot.Name"));
 			
-			new DN_DiscordBotConnector(this); //TASK WHICH CONNECTS THE DISCORD BOT
+			var connector = new DN_DiscordBotConnector(this); //TASK WHICH CONNECTS THE DISCORD BOT
+
+			if (this.getConfigManager().getConfig().getBoolean("Options.DiscordBot.waitForBotToAcceptConnections"))
+				connector.waitConnect();
 		}
 		
 		//SCANS THE SERVER ONCE FOR PLAYTIME OF THE SERVER, TO UPDATE THE DATABASE

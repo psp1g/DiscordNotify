@@ -1,5 +1,6 @@
 package me.truemb.discordnotify.runnable;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -11,12 +12,22 @@ public class DN_DiscordBotConnector implements Runnable {
 	
 	private DiscordNotifyMain instance;
 	
-	private ScheduledFuture<?> task;
-	
+	private ScheduledFuture<?> repeater;
+	private CompletableFuture<Void> task;
+
 	public DN_DiscordBotConnector(DiscordNotifyMain plugin) {
 		this.instance = plugin;
-		
-		this.task = plugin.getExecutor().scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
+
+		this.repeater = plugin.getExecutor().scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
+		this.task = new CompletableFuture<>();
+	}
+
+	public void waitConnect() {
+		try {
+			this.task.get();
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -29,10 +40,14 @@ public class DN_DiscordBotConnector implements Runnable {
 		if(this.instance.getDiscordManager().getDiscordBot() == null)
 			return;
 		
-		if(this.instance.getDiscordManager().isDiscordBotHooked()) //TASK SUCCESSFUL DONE
+		if(this.instance.getDiscordManager().isDiscordBotHooked()) {
+			//TASK SUCCESSFUL DONE
+			this.repeater.cancel(true);
+			this.task.complete(null);
+		} else if(this.instance.getDiscordManager().getDiscordBot().getStatus() == BotStatus.OFFLINE) { //BOT OFFLINE
+			this.repeater.cancel(true);
 			this.task.cancel(true);
-		else if(this.instance.getDiscordManager().getDiscordBot().getStatus() == BotStatus.OFFLINE) { //BOT OFFLINE
-			this.task.cancel(true);
+
 			this.instance.getUniversalServer().getLogger().warning("Couldn't connect to the Bot. Is the Bot Offline?");
 		}
 	}

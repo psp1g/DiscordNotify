@@ -33,6 +33,8 @@ Options:
     Name: 'default'
     #Enter a specific Server. Leave it to -1 if you use the bot only for Spicord. Otherwise the Server ID
     ServerID: -1
+    #Wait for the bot to start before accepting connections to the proxy
+    waitForBotToAcceptConnections: false
   DateFormat:
     Date: dd.MM.yyyy
     Time: HH:mm:ss
