@@ -11,11 +11,14 @@ import club.minnced.discord.webhook.WebhookClient;
 import me.truemb.discordnotify.enums.FeatureType;
 import me.truemb.discordnotify.enums.InformationType;
 import me.truemb.discordnotify.enums.MinotarTypes;
+import me.truemb.discordnotify.utils.MessageFilter;
 import me.truemb.discordnotify.main.DiscordNotifyMain;
 import me.truemb.universal.listener.UniversalEventhandler;
 import me.truemb.universal.player.UniversalLocation;
 import me.truemb.universal.player.UniversalPlayer;
+
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 public class DiscordNotifyListener extends UniversalEventhandler{
 	
@@ -279,7 +282,8 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 		placeholder.put("server", serverName);
 		
 		
-		switch (this.instance.getConfigManager().getMessageType(FeatureType.PlayerJoinLeave)) {	
+		switch (this.instance.getConfigManager().getMessageType(FeatureType.PlayerJoinLeave)) {
+	
 			case MESSAGE: {
 				try {
 					this.instance.getDiscordManager().sendDiscordMessage(Long.parseLong(channelId), "PlayerLeaveMessage", placeholder);
@@ -348,12 +352,14 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 				}
 			}
 		}
-				
+
+		List<RichCustomEmoji> emojis = this.instance.getDiscordManager().getCurrentGuild().getEmojis();
+
 		//DISCORD STAFF MESSAGE
 		String channelId = this.instance.getConfigManager().getChannel(FeatureType.Staff);
 		HashMap<String, String> placeholder = new HashMap<>();
 		placeholder.put("Player", up.getIngameName());
-		placeholder.put("Message", message);
+		placeholder.put("Message", MessageFilter.filterDiscordMessage(message, emojis));
 		placeholder.put("UUID", uuid.toString());
 		placeholder.put("server", up.getServer() != null ? up.getServer() : "");
 				
@@ -421,9 +427,11 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 		//Server should not send Messages
 		if(channelId == null || channelId.equals("") || channelId.equals("-1"))
 			return;
+
+		List<RichCustomEmoji> emojis = this.instance.getDiscordManager().getCurrentGuild().getEmojis();
 			
 		HashMap<String, String> placeholder = new HashMap<>();
-		placeholder.put("Message", message);
+		placeholder.put("Message", MessageFilter.filterDiscordMessage(message, emojis));
 		placeholder.put("Player", up.getIngameName());
 		placeholder.put("UUID", uuid.toString());
 		placeholder.put("group", group == null ? "" : group);
