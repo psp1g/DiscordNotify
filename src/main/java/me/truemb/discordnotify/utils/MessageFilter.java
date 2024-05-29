@@ -23,12 +23,24 @@ public class MessageFilter {
 
 	public static String escapeMarkdown(String message) {
 		return message
+				.replace("\\", "\\\\")
 				.replace("`", "\\`")
 				.replace("~", "\\~")
 				.replace(">", "\\>")
 				.replace("*", "\\*")
 				.replace("_", "\\_")
 				.replace("|", "\\|");
+	}
+
+	public static String oddLastBackslash(String message) {
+		// If there is a(n odd amount of) "\" at the end of a message, it will cause an error
+		// https://github.com/psp1g/DiscordNotify/issues/3
+		Pattern escPattern = Pattern.compile("(\\\\)+$");
+		Matcher m = escPattern.matcher(message);
+
+		if (m.find() && m.group(1).length() % 2 == 1)
+			return message + "\\";
+		return message;
 	}
 
 	public static String parseEmotes(String message, List<RichCustomEmoji> emojis) {
@@ -63,9 +75,11 @@ public class MessageFilter {
 	}
 
 	public static String filterDiscordMessage(String message, Guild guild) {
-		if (message == null || message.isEmpty()) return "";
+		if (message == null) return "";
 
 		String filteredMessage = message.trim();
+
+		if (message.isEmpty()) return "";
 
 		var cfg = DiscordNotifyMain.Singleton.getConfigManager().getConfig();
 		boolean shouldFilter = cfg.getBoolean("Options.Chat.filtering.enabled");
@@ -76,7 +90,8 @@ public class MessageFilter {
 
 			if (mentions) filteredMessage = stripMentions(message.trim());
 			if (markdown) filteredMessage = escapeMarkdown(filteredMessage);
-		}
+			else filteredMessage = oddLastBackslash(filteredMessage);
+		} else filteredMessage = oddLastBackslash(filteredMessage);
 
 		boolean shouldParseEmotes = cfg.getBoolean("Options.Chat.parseEmotes");
 
