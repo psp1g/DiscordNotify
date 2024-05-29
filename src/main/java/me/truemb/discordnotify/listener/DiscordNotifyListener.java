@@ -412,13 +412,11 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 			}
 		}
 
-		List<RichCustomEmoji> emojis = this.instance.getDiscordManager().getCurrentGuild().getEmojis();
-
 		//DISCORD STAFF MESSAGE
 		String channelId = this.instance.getConfigManager().getChannel(FeatureType.Staff);
 		HashMap<String, String> placeholder = new HashMap<>();
 		placeholder.put("Player", up.getIngameName());
-		placeholder.put("Message", MessageFilter.filterDiscordMessage(message, emojis));
+		placeholder.put("Message", MessageFilter.filterDiscordMessage(message, this.instance.getDiscordManager().getCurrentGuild()));
 		placeholder.put("UUID", uuid.toString());
 		placeholder.put("server", up.getServer() != null ? up.getServer() : "");
 				
@@ -486,11 +484,9 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 		//Server should not send Messages
 		if(channelId == null || channelId.equals("") || channelId.equals("-1"))
 			return;
-
-		List<RichCustomEmoji> emojis = this.instance.getDiscordManager().getCurrentGuild().getEmojis();
 			
 		HashMap<String, String> placeholder = new HashMap<>();
-		placeholder.put("Message", MessageFilter.filterDiscordMessage(message, emojis));
+		placeholder.put("Message", MessageFilter.filterDiscordMessage(message, this.instance.getDiscordManager().getCurrentGuild()));
 		placeholder.put("Player", up.getIngameName());
 		placeholder.put("UUID", uuid.toString());
 		placeholder.put("group", group == null ? "" : group);

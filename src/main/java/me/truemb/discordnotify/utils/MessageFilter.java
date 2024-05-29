@@ -1,5 +1,8 @@
 package me.truemb.discordnotify.utils;
 
+import me.truemb.discordnotify.enums.FeatureType;
+import me.truemb.discordnotify.main.DiscordNotifyMain;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -59,12 +62,26 @@ public class MessageFilter {
 		return parsedMessage;
 	}
 
-	public static String filterDiscordMessage(String message, List<RichCustomEmoji> emojis) {
+	public static String filterDiscordMessage(String message, Guild guild) {
 		if (message == null || message.isEmpty()) return "";
 
-		String filteredMessage = stripMentions(message.trim());
-		filteredMessage = escapeMarkdown(filteredMessage);
-		filteredMessage = parseEmotes(filteredMessage, emojis);
+		String filteredMessage = message.trim();
+
+		var cfg = DiscordNotifyMain.Singleton.getConfigManager().getConfig();
+		boolean shouldFilter = cfg.getBoolean("Options.Chat.filtering.enabled");
+
+		if (shouldFilter) {
+			boolean mentions = cfg.getBoolean("Options.Chat.filtering.preventMentions");
+			boolean markdown = cfg.getBoolean("Options.Chat.filtering.stripMarkdown");
+
+			if (mentions) filteredMessage = stripMentions(message.trim());
+			if (markdown) filteredMessage = escapeMarkdown(filteredMessage);
+		}
+
+		boolean shouldParseEmotes = cfg.getBoolean("Options.Chat.parseEmotes");
+
+		if (shouldParseEmotes)
+			filteredMessage = parseEmotes(filteredMessage, guild.getEmojis());
 
 		return filteredMessage;
 	}

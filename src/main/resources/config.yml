@@ -111,6 +111,15 @@ Options:
       freebuild: -1
     bypassPrefix:
       - '?'
+    #if enabled, parse :emote: text into emote mentions to show up properly in discord
+    parseEmotes: true
+    filtering:
+      #Minecraft->Discord chat filtering
+      enabled: true
+      #if enabled, prevent markdown styling like **bold** __underline__ etc
+      stripMarkdown: false
+      #Prevent Discord @Mentions (still shows original text)
+      preventMentions: true
   Staff:
     MessageType: MESSAGE
     #Should the Discord Message send to the Minecraft Server?

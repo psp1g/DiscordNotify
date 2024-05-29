@@ -38,7 +38,9 @@ import me.truemb.universal.server.UniversalServer;
 public class DiscordNotifyMain {
 	
     public static final int BSTATS_PLUGIN_ID = 12029;
-		
+
+	public static DiscordNotifyMain Singleton;
+
 	private final File dataDirectory;
 	private PluginDescription pluginDescription;
 	private ScheduledExecutorService executor;
@@ -80,6 +82,8 @@ public class DiscordNotifyMain {
 
 	//OWN CONSTRUCTER FOR VELOCITY SINCE THE PROXYSERVER INSTANCE IS NEED ON START
 	public DiscordNotifyMain(File dataDirectory, com.velocitypowered.api.proxy.ProxyServer proxy, PluginDescription pluginDescription) {
+		Singleton = this;
+
 		this.dataDirectory = dataDirectory;
 		this.pluginDescription = pluginDescription;
 		
@@ -96,6 +100,8 @@ public class DiscordNotifyMain {
 	}
 	
 	public DiscordNotifyMain(File dataDirectory, ServerType type, PluginDescription pluginDescription) {
+		Singleton = this;
+
 		this.dataDirectory = dataDirectory;
 		this.pluginDescription = pluginDescription;
 		
