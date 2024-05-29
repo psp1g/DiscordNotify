@@ -148,9 +148,9 @@ public class VerifySQL {
 					
 					if (verfiedGroupS.matches("[0-9]+")) {
 						Long verifiedGroupId = Long.parseLong(verfiedGroupS);
-						verifyRole = discordBot.getJda().getRoleById(verifiedGroupId);
+						verifyRole = guild.getRoleById(verifiedGroupId);
 					}else {
-						List<Role> verifyRoles = discordBot.getJda().getRolesByName(verfiedGroupS, true);
+						List<Role> verifyRoles = guild.getRolesByName(verfiedGroupS, true);
 						if(verifyRoles.size() > 0)
 							verifyRole = verifyRoles.get(0);
 					}

@@ -9,6 +9,7 @@ import me.truemb.discordnotify.enums.FeatureType;
 import me.truemb.discordnotify.enums.GroupAction;
 import me.truemb.discordnotify.main.DiscordNotifyMain;
 import me.truemb.universal.player.UniversalPlayer;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -46,10 +47,12 @@ public class DN_VerifyCommand {
 				}
 				
 				//UNLINK
+				Guild guild = instance.getDiscordManager().getCurrentGuild();
 				long disuuid = this.instance.getVerifyManager().getVerfiedWith(uuid);
-				Member member = this.instance.getDiscordManager().getDiscordBot().getJda().getGuilds().get(0).getMemberById(disuuid);
+				Member member = guild.getMemberById(disuuid);
+
 				if(member == null)
-					member = this.instance.getDiscordManager().getDiscordBot().getJda().getGuilds().get(0).retrieveMemberById(disuuid).complete();
+					member = guild.retrieveMemberById(disuuid).complete();
 				
 				//REMOVE VERIFY ROLE
 				String verfiedGroupS = this.instance.getConfigManager().getConfig().getString("Options." + FeatureType.Verification.toString() + ".discordRole");
@@ -57,20 +60,22 @@ public class DN_VerifyCommand {
 				
 				if (verfiedGroupS.matches("[0-9]+")) {
 					Long verifiedGroupId = Long.parseLong(verfiedGroupS);
-					verifyRole = this.instance.getDiscordManager().getDiscordBot().getJda().getRoleById(verifiedGroupId);
+					verifyRole = guild.getRoleById(verifiedGroupId);
 				}else {
-					List<Role> verifyRoles = this.instance.getDiscordManager().getDiscordBot().getJda().getRolesByName(verfiedGroupS, true);
+					List<Role> verifyRoles = guild.getRolesByName(verfiedGroupS, true);
 					if(verifyRoles.size() > 0)
 						verifyRole = verifyRoles.get(0);
 				}
-				
+
 				if(verifyRole == null) {
 					this.instance.getUniversalServer().getLogger().warning("Verify Role couldn't be found. Config Value: '" + verfiedGroupS + "'");
 					return;
 				}
-				
-    			verifyRole.getGuild().removeRoleFromMember(member, verifyRole).queue();
-				
+
+				if (member.getRoles().contains(verifyRole)) {
+					guild.removeRoleFromMember(member, verifyRole).queue();
+				}
+
 				//NICKNAME
 				if(this.instance.getConfigManager().getConfig().getBoolean("Options." + FeatureType.Verification.toString() + ".changeNickname")) {
 					try {
