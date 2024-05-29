@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import me.truemb.discordnotify.enums.FeatureType;
 import me.truemb.discordnotify.main.DiscordNotifyMain;
+import me.truemb.universal.player.UniversalPlayer;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
@@ -55,7 +56,20 @@ public class DC_RoleChangeListener extends ListenerAdapter {
 
 		this.instance.getVerifyManager().setBackupRoles(uuid, rolesBackup);
 		this.instance.getVerifySQL().updateRoles(uuid, rolesBackup);
-		
+
+		// Check for banned discord roles
+		UniversalPlayer up = this.instance.getUniversalServer().getPlayer(uuid);
+
+		if (up != null && up.isOnline()) {
+			List<String> bannedRoleNames = this.instance
+					.getConfigManager()
+					.getConfig()
+					.getStringList("Options." + FeatureType.Verification + ".bannedDiscordRoles");
+			boolean banned = roles.stream().anyMatch(role -> bannedRoleNames.contains(role.getName()));
+
+			if (banned)
+				up.kick(this.instance.getConfigManager().getMinecraftMessage("discordBanned", false));
+		}
     }
 
 	@Override

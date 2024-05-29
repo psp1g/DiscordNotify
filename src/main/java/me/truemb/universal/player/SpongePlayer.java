@@ -1,5 +1,6 @@
 package me.truemb.universal.player;
 
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.math.vector.Vector3d;
@@ -36,6 +37,14 @@ public class SpongePlayer extends UniversalPlayer{
 	@Override
 	public void sendMessage(Component message) {
 		this.getSpongePlayer().sendMessage(message);
+	}
+
+	public void kick(String message) {
+		this.kick(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
+	}
+
+	public void kick(Component message) {
+		this.getVelocityPlayer().disconnect(message);
 	}
 
 	@Override

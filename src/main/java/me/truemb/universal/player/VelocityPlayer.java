@@ -36,6 +36,16 @@ public class VelocityPlayer extends UniversalPlayer{
 	}
 
 	@Override
+	public void kick(String message) {
+		this.kick(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
+	}
+
+	@Override
+	public void kick(Component message) {
+		this.getVelocityPlayer().disconnect(message);
+	}
+
+	@Override
 	public String getIP() {
 		return this.getVelocityPlayer().getRemoteAddress().getAddress().getHostAddress().split(":")[0].replace("/", "");
 	}

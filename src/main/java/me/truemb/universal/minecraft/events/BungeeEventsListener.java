@@ -2,15 +2,13 @@ package me.truemb.universal.minecraft.events;
 
 import java.util.UUID;
 
+import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import me.truemb.discordnotify.main.DiscordNotifyMain;
 import me.truemb.universal.player.BungeePlayer;
 import me.truemb.universal.player.UniversalPlayer;
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
-import net.md_5.bungee.api.event.ServerKickEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -46,7 +44,18 @@ public class BungeeEventsListener implements Listener {
 		if(b)
 			e.setCancelled(true);
 	}
-	
+
+	public void onPreConnect(PostLoginEvent e) {
+		ProxiedPlayer p = e.getPlayer();
+		UUID uuid = p.getUniqueId();
+		UniversalPlayer up = this.plugin.getUniversalServer().getPlayer(uuid);
+
+		if(up == null)
+			this.plugin.getUniversalServer().addPlayer(up = new BungeePlayer(p, this.adventure));
+
+		this.plugin.getListener().onPlayerPreConnect(up);
+	}
+
 	@EventHandler
 	public void onConnect(ServerConnectedEvent e) {
 

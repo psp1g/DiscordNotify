@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import me.truemb.discordnotify.manager.VerifyManager;
+import me.truemb.discordnotify.utils.DiscordManager;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.Result;
 import org.spicord.bot.DiscordBot;
 
 import club.minnced.discord.webhook.WebhookClient;
@@ -29,6 +34,60 @@ public class DiscordNotifyListener extends UniversalEventhandler{
 	public DiscordNotifyListener(DiscordNotifyMain plugin, HashMap<UUID, Boolean> discordChatEnabled) {
 		this.instance = plugin;
 		this.discordChatEnabled = discordChatEnabled;
+	}
+
+	@Override
+	public boolean onPlayerPreConnect(UniversalPlayer up) {
+		if (this.instance.getUniversalServer().isProxySubServer())
+			return true;
+
+		UUID uuid = up.getUUID();
+
+		DiscordManager dcManager = this.instance.getDiscordManager();
+		VerifyManager vfManager = this.instance.getVerifyManager();
+
+		if (dcManager == null || vfManager == null) return true;
+
+		if (dcManager.isAddonEnabled("disnotify::verify") && vfManager.isVerified(uuid)) {
+			Long diid = vfManager.getVerfiedWith(uuid);
+
+			Guild guild = dcManager.getCurrentGuild();
+			Member user = guild.retrieveMemberById(diid).complete();
+
+			// user left/was kicked from the guild
+			if (user == null) {
+				vfManager.removeVerified(uuid);
+				this.instance.getVerifySQL().deleteVerification(uuid);
+
+				return true;
+			}
+
+			// Check for banned role names
+			List<Role> roles = user.getRoles();
+			List<String> bannedRoleNames = this.instance
+					.getConfigManager()
+					.getConfig()
+					.getStringList("Options." + FeatureType.Verification + ".bannedDiscordRoles");
+
+			boolean banned = roles.stream().anyMatch(role -> bannedRoleNames.contains(role.getName()));
+
+			if (!banned) {
+				// Check for discord bans
+				Result<Guild.Ban> banResult = guild
+						.retrieveBan(user)
+						.mapToResult()
+						.complete();
+
+				banned = banResult.isSuccess();
+			}
+
+			if (banned) {
+				up.kick(this.instance.getConfigManager().getMinecraftMessage("discordBanned", false));
+				return false;
+			}
+		}
+
+		return true;
 	}
 	
 	@Override

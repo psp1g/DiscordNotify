@@ -9,7 +9,9 @@ public abstract class UniversalEventhandler {
 	 */
 
 	public abstract void onPlayerQuit(UniversalPlayer up, String serverName);
-	
+
+	public abstract boolean onPlayerPreConnect(UniversalPlayer up);
+
 	public abstract void onPlayerJoin(UniversalPlayer up, String serverName);
 	
 	public abstract void onPlayerServerChange(UniversalPlayer up, String oldServerName, String newServerName);

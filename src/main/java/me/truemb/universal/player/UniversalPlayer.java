@@ -51,6 +51,10 @@ public abstract class UniversalPlayer {
     
     public abstract void sendMessage(Component message);
 
+	public abstract void kick(String message);
+
+	public abstract void kick(Component message);
+
     public boolean hasPermission(String permission) {
         if (permission == null || permission.isEmpty()) return true;
 

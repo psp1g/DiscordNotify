@@ -1,5 +1,6 @@
 package me.truemb.universal.player;
 
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -37,6 +38,14 @@ public class BukkitPlayer extends UniversalPlayer{
 	@Override
 	public void sendMessage(Component message) {
 		this.adventure.player(this.getBukkitPlayer()).sendMessage(message);
+	}
+
+	public void kick(String message) {
+		this.getBukkitPlayer().kickPlayer(message);
+	}
+
+	public void kick(Component message) {
+		this.kick(LegacyComponentSerializer.legacyAmpersand().serialize(message));
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 
 import me.truemb.discordnotify.main.DiscordNotifyMain;
@@ -38,6 +39,25 @@ public class VelocityEventsListener {
 			return;
 		
 		this.plugin.getListener().onPlayerMessage(up, message);
+	}
+
+	@Subscribe
+	public void onPreConnect(ServerPreConnectEvent e) {
+		Player p = e.getPlayer();
+		UUID uuid = p.getUniqueId();
+
+		String serverName = p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : null;
+
+		UniversalPlayer up = this.plugin.getUniversalServer().getPlayer(uuid);
+		if (up == null) {
+			up = new VelocityPlayer(p);
+			this.plugin.getUniversalServer().addPlayer(up);
+		}
+
+		boolean allowed = this.plugin.getListener().onPlayerPreConnect(up);
+
+		if (!allowed)
+			e.setResult(ServerPreConnectEvent.ServerResult.denied());
 	}
 
 	/**

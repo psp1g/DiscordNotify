@@ -3,6 +3,7 @@ package me.truemb.universal.player;
 import me.truemb.universal.enums.ServerType;
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -35,6 +36,14 @@ public class BungeePlayer extends UniversalPlayer{
 	@Override
 	public void sendMessage(Component message) {
 		this.adventure.player(this.getBungeePlayer()).sendMessage(message);
+	}
+
+	public void kick(String message) {
+		this.getBungeePlayer().disconnect(TextComponent.fromLegacyText(message));
+	}
+
+	public void kick(Component message) {
+		this.kick(LegacyComponentSerializer.legacyAmpersand().serialize(message));
 	}
 
 	@Override

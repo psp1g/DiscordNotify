@@ -122,6 +122,10 @@ Options:
   Verification:
     #This Role is needed on the Discord Server, to identify already authenticated Users; It's recommended to use the role id here
     discordRole: 'verified'
+    #If a discord account linked to a minecraft account has any of these roles, they will be prevented from joining
+    #These roles are treated like a discord ban
+    bannedDiscordRoles:
+      - 'bad guy role'
     #This Rank is for authenticated Users after the verification. Its not needed. (leave it blank or enter the name of the group)
     #Use "s:groupname" for Spigot Server Groups or "b:groupname" for bungeecord
     minecraftRank: ''
@@ -202,6 +206,7 @@ Messages:
   notABoolean: '&4ERROR. &cPlease use as a value &fTrue/False'
   disabledFeature: '&4The Feature is disabled.'
   notAMaterial: '&4ERROR. &cThis Material doesnt exists.'
+  discordBanned: "&cYou're currently banned in the Discord server!"
   discordChatMessage: '&f%Tag%&7: &f%Message%'
   staffEnable: '&aEnabled the Staff Chat to receive staff messages'
   staffDisable: '&cDisabled the Staff Chat to not receive stagg messages'
@@ -479,4 +484,4 @@ PlaceholderAPI:
     false: 'false'
 
   #Do NOT touch
-ConfigVersion: 26
+ConfigVersion: 27
