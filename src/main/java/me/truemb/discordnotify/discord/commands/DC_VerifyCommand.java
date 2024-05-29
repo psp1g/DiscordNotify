@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import me.truemb.universal.server.ProxyUniversalServer;
 import net.dv8tion.jda.api.entities.Guild;
 import org.spicord.api.addon.SimpleAddon;
 import org.spicord.bot.DiscordBot;
@@ -129,6 +130,21 @@ public class DC_VerifyCommand extends SimpleAddon {
 
 							}else {
 								this.instance.getUniversalServer().getLogger().warning("Something went wrong with removing the Verificationsgroup on Minecraft!");
+							}
+						}
+
+						// Send player to another server
+						if (this.instance.getUniversalServer() instanceof ProxyUniversalServer proxyServer) {
+							String sendServer = this.instance
+									.getConfigManager()
+									.getConfig()
+									.getString("Options." + FeatureType.Verification + ".unverifiedSendServer");
+
+							if (!sendServer.isEmpty()) {
+								UniversalPlayer up = this.instance.getUniversalServer().getPlayer(mcuuid);
+
+								if (up != null)
+									proxyServer.sendPlayerToServer(up, sendServer);
 							}
 						}
 

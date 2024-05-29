@@ -3,10 +3,13 @@ package me.truemb.universal.server;
 import java.util.logging.Logger;
 
 import me.truemb.discordnotify.utils.ChatColor;
+import me.truemb.universal.player.UniversalPlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class BungeecordServer extends UniversalServer {
+public class BungeecordServer extends ProxyUniversalServer {
 
 	@Override
 	public BungeecordServer getBungeeServer() {
@@ -34,6 +37,14 @@ public class BungeecordServer extends UniversalServer {
 	@Override
 	public void sendCommandToConsole(String command) {
 		ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), command);
+	}
+
+	@Override
+	public void sendPlayerToServer(UniversalPlayer up, String server) {
+		ProxiedPlayer ply = up.getBungeePlayer();
+		if (ply.getServer().getInfo().getName().equalsIgnoreCase(server)) return;
+		ServerInfo target = ProxyServer.getInstance().getServerInfo(server);
+		if (target != null) ply.connect(target);
 	}
 
 	@SuppressWarnings("deprecation")

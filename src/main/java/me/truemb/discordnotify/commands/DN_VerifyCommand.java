@@ -9,6 +9,7 @@ import me.truemb.discordnotify.enums.FeatureType;
 import me.truemb.discordnotify.enums.GroupAction;
 import me.truemb.discordnotify.main.DiscordNotifyMain;
 import me.truemb.universal.player.UniversalPlayer;
+import me.truemb.universal.server.ProxyUniversalServer;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -106,6 +107,18 @@ public class DN_VerifyCommand {
 						
 					}else {
 						this.instance.getUniversalServer().getLogger().warning("Something went wrong with removing the Verificationsgroup on Minecraft!");
+					}
+				}
+
+				//Send the logged in user to another server
+				if (this.instance.getUniversalServer() instanceof ProxyUniversalServer proxyServer) {
+					String sendServer = this.instance
+							.getConfigManager()
+							.getConfig()
+							.getString("Options." + FeatureType.Verification + ".unverifiedSendServer");
+
+					if (!sendServer.isEmpty()){
+						proxyServer.sendPlayerToServer(up, sendServer);
 					}
 				}
 				

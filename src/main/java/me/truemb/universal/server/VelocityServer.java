@@ -1,13 +1,19 @@
 package me.truemb.universal.server;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
+import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
+import me.truemb.universal.player.UniversalPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-public class VelocityServer extends UniversalServer{
+public class VelocityServer extends ProxyUniversalServer {
 	
 	private ProxyServer proxyServer;
         
@@ -47,6 +53,19 @@ public class VelocityServer extends UniversalServer{
 	@Override
 	public void sendCommandToConsole(String command) {
 		this.proxyServer.getCommandManager().executeAsync(this.proxyServer.getConsoleCommandSource(), command);
+	}
+
+	public void sendPlayerToServer(UniversalPlayer up, String server) {
+		Player ply = up.getVelocityPlayer();
+		Optional<ServerConnection> curConnection = ply.getCurrentServer();
+		if (curConnection.isPresent() && curConnection.get().getServerInfo().getName().equalsIgnoreCase(server))
+			return;
+
+		Optional<RegisteredServer> target = proxyServer.getServer(server);
+		if (target.isEmpty()) return;
+
+		ConnectionRequestBuilder reqBuilder = ply.createConnectionRequest(target.get());
+		reqBuilder.fireAndForget();
 	}
 
 	@Override

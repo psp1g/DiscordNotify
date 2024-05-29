@@ -128,6 +128,8 @@ Options:
     #These roles are treated like a discord ban
     bannedDiscordRoles:
       - 'bad guy role'
+    # Optional server to send players who are unverified
+    unverifiedSendServer: ''
     #This Rank is for authenticated Users after the verification. Its not needed. (leave it blank or enter the name of the group)
     #Use "s:groupname" for Spigot Server Groups or "b:groupname" for bungeecord
     minecraftRank: ''
