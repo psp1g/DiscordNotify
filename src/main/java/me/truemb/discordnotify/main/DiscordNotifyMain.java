@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import me.truemb.discordnotify.listener.ProxyEventHandler;
+import me.truemb.universal.listener.UniversalEventHandler;
 import org.bukkit.OfflinePlayer;
 
 import lombok.Getter;
@@ -19,7 +21,7 @@ import me.truemb.discordnotify.database.VerifySQL;
 import me.truemb.discordnotify.database.connector.AsyncMySQL;
 import me.truemb.discordnotify.enums.FeatureType;
 import me.truemb.discordnotify.enums.InformationType;
-import me.truemb.discordnotify.listener.DiscordNotifyListener;
+import me.truemb.discordnotify.listener.SubServerEventHandler;
 import me.truemb.discordnotify.manager.ConfigManager;
 import me.truemb.discordnotify.manager.DelayManager;
 import me.truemb.discordnotify.manager.OfflineInformationManager;
@@ -78,7 +80,7 @@ public class DiscordNotifyMain {
 
     //UNIVERSAL
 	private UniversalServer universalServer;
-	private DiscordNotifyListener listener;
+	private UniversalEventHandler listener;
 
 	//OWN CONSTRUCTER FOR VELOCITY SINCE THE PROXYSERVER INSTANCE IS NEED ON START
 	public DiscordNotifyMain(File dataDirectory, com.velocitypowered.api.proxy.ProxyServer proxy, PluginDescription pluginDescription) {
@@ -126,7 +128,11 @@ public class DiscordNotifyMain {
 		this.configManager = new ConfigManager(this.getUniversalServer().getLogger(), configInputStream, this.getDataDirectory());
 		
 		this.pluginMessenger = new PluginMessenger(this);
-		this.listener = new DiscordNotifyListener(this, this.getDiscordChatEnabled());
+
+		if (this.getUniversalServer().isProxy())
+			this.listener = new ProxyEventHandler();
+		else
+			this.listener = new SubServerEventHandler();
 
 		//MANAGER
 		this.delayManager = new DelayManager();

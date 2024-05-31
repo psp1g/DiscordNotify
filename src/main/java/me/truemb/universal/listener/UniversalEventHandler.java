@@ -2,7 +2,7 @@ package me.truemb.universal.listener;
 
 import me.truemb.universal.player.UniversalPlayer;
 
-public abstract class UniversalEventhandler {
+public abstract class UniversalEventHandler {
 	
 	/**
 	 * Methods doesn't contain NPCs
