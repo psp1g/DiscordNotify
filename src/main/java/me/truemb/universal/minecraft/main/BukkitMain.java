@@ -69,7 +69,6 @@ public class BukkitMain extends JavaPlugin implements IRelay {
 		BukkitEventsListener listener = new BukkitEventsListener(this.instance, this.getAdventure());
 		plManager.registerEvents(listener, this);
 
-		getLogger().warning("VENTURE CHAT ???" + (plManager.getPlugin("VentureChat") != null));
 		if (plManager.getPlugin("VentureChat") != null) {
 			plManager.registerEvents(
 				new me.truemb.universal.minecraft.events.VentureChatEventsListener(this.instance),

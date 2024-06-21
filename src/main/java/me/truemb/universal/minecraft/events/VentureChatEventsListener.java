@@ -24,7 +24,6 @@ public class VentureChatEventsListener implements Listener {
 
 		if (mcPlayer == null) return;
 
-		DiscordNotifyMain.Singleton.getUniversalServer().getLogger().warning("????? " + chatEvent.getChannel().getName());
 		this.plugin.getPluginMessenger()
 			.sendVentureChat(
 				mcPlayer.getUUID(),

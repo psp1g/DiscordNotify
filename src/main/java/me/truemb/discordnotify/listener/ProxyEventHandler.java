@@ -581,21 +581,17 @@ public class ProxyEventHandler extends UniversalEventHandler {
 
 		String channelId = null;
 		if (mcChannel != null && cfg.getBoolean("Options.Chat.enableVentureChannelSeperatedChat")) {
-			DiscordNotifyMain.Singleton.getUniversalServer().getLogger().warning("VENTURE CHAT SEPARATED CHANNEL " + mcChannel + " SERVER " + server);
-
 			Set<String> servers = cfg.getConfigurationSection("Options.Chat.ventureChannelSeperatedChat").getKeys(false);
 			for (String cServer : servers)
 				if (cServer.equalsIgnoreCase(server)) {
 					Set<String> mcChannels = cfg.getConfigurationSection("Options.Chat.ventureChannelSeperatedChat." + cServer).getKeys(false);
 
-					for (String cChannel : mcChannels) {
-						DiscordNotifyMain.Singleton.getUniversalServer().getLogger().warning("CHECK SRV " + server + " CHAN " + cChannel + " FOR " + mcChannel);
+					for (String cChannel : mcChannels)
 						if (cChannel.equalsIgnoreCase(mcChannel)) {
 							channelId = cfg.getString("Options.Chat.ventureChannelSeperatedChat." + cServer + "." + cChannel);
-							DiscordNotifyMain.Singleton.getUniversalServer().getLogger().warning(" ID!! FOUND " + channelId);
 							break;
 						}
-					}
+
 					break;
 				}
 
