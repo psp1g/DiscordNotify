@@ -87,10 +87,12 @@ public class MessageFilter {
 		if (shouldFilter) {
 			boolean mentions = cfg.getBoolean("Options.Chat.filtering.preventMentions");
 			boolean markdown = cfg.getBoolean("Options.Chat.filtering.stripMarkdown");
+			boolean colorCodes = cfg.getBoolean("Options.Chat.filtering.stripChatColors");
 
 			if (mentions) filteredMessage = stripMentions(message.trim());
 			if (markdown) filteredMessage = escapeMarkdown(filteredMessage);
 			else filteredMessage = oddLastBackslash(filteredMessage);
+			if (colorCodes) filteredMessage = ChatColor.stripColor(filteredMessage);
 		} else filteredMessage = oddLastBackslash(filteredMessage);
 
 		boolean shouldParseEmotes = cfg.getBoolean("Options.Chat.parseEmotes");

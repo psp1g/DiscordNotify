@@ -17,7 +17,9 @@ public abstract class UniversalEventHandler {
 	public abstract void onPlayerServerChange(UniversalPlayer up, String oldServerName, String newServerName);
 	
 	public abstract boolean onPlayerMessage(UniversalPlayer up, String message);
-	
+
+	public abstract void onPlayerVentureChatMessage(UniversalPlayer up, String channelName, String message);
+
 	public abstract void onPlayerDeath(UniversalPlayer up, String message);
 	
 	public abstract void onPlayerAdvancement(UniversalPlayer up, String message);

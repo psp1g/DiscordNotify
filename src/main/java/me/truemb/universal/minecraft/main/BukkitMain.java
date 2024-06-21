@@ -9,6 +9,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -61,11 +62,21 @@ public class BukkitMain extends JavaPlugin implements IRelay {
 			players.add(new BukkitPlayer(all, this.getAdventure()));
 		}
 		this.instance.getUniversalServer().loadPlayers(players);
-		
-		//LOAD LISTENER
+
+		PluginManager plManager = this.getServer().getPluginManager();
+
+		//LOAD LISTENERS
 		BukkitEventsListener listener = new BukkitEventsListener(this.instance, this.getAdventure());
-		this.getServer().getPluginManager().registerEvents(listener, this);
-		
+		plManager.registerEvents(listener, this);
+
+		getLogger().warning("VENTURE CHAT ???" + (plManager.getPlugin("VentureChat") != null));
+		if (plManager.getPlugin("VentureChat") != null) {
+			plManager.registerEvents(
+				new me.truemb.universal.minecraft.events.VentureChatEventsListener(this.instance),
+				this
+			);
+		}
+
 		//LOAD COMMANDS
 		if(!this.instance.getUniversalServer().isProxySubServer()) {
 			try{

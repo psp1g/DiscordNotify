@@ -120,6 +120,33 @@ public class DiscordNotifyMain {
 	//TODO SPONGE SUPPORT - Version 9 must be Supported from Spicord first
 
 	/**
+	 *
+	 * [09:47:49 ERROR]: Error occurred while enabling DiscordNotify v3.3.6 (Is it up to date?)
+	 * java.lang.NoClassDefFoundError: net/dv8tion/jda/api/entities/UserSnowflake
+	 *         at DiscordNotify-3.3.6-all.jar/me.truemb.discordnotify.main.DiscordNotifyMain.onStart(DiscordNotifyMain.java:123) ~[DiscordNotify-3.3.6-all.jar:?]
+	 *         at DiscordNotify-3.3.6-all.jar/me.truemb.discordnotify.main.DiscordNotifyMain.<init>(DiscordNotifyMain.java:109) ~[DiscordNotify-3.3.6-all.jar:?]
+	 *         at DiscordNotify-3.3.6-all.jar/me.truemb.universal.minecraft.main.BukkitMain.onEnable(BukkitMain.java:44) ~[DiscordNotify-3.3.6-all.jar:?]
+	 *         at org.bukkit.plugin.java.JavaPlugin.setEnabled(JavaPlugin.java:288) ~[paper-api-1.21-R0.1-SNAPSHOT.jar:?]
+	 *         at io.papermc.paper.plugin.manager.PaperPluginInstanceManager.enablePlugin(PaperPluginInstanceManager.java:202) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at io.papermc.paper.plugin.manager.PaperPluginManagerImpl.enablePlugin(PaperPluginManagerImpl.java:109) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at org.bukkit.plugin.SimplePluginManager.enablePlugin(SimplePluginManager.java:520) ~[paper-api-1.21-R0.1-SNAPSHOT.jar:?]
+	 *         at org.bukkit.craftbukkit.CraftServer.enablePlugin(CraftServer.java:629) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at org.bukkit.craftbukkit.CraftServer.enablePlugins(CraftServer.java:578) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at net.minecraft.server.MinecraftServer.loadWorld0(MinecraftServer.java:690) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at net.minecraft.server.MinecraftServer.loadLevel(MinecraftServer.java:452) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at net.minecraft.server.dedicated.DedicatedServer.initServer(DedicatedServer.java:327) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:1157) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:329) ~[paper-1.21.jar:1.21-9-4ea696f]
+	 *         at java.base/java.lang.Thread.run(Thread.java:1583) ~[?:?]
+	 * Caused by: java.lang.ClassNotFoundException: net.dv8tion.jda.api.entities.UserSnowflake
+	 *         at org.bukkit.plugin.java.PluginClassLoader.loadClass0(PluginClassLoader.java:197) ~[paper-api-1.21-R0.1-SNAPSHOT.jar:?]
+	 *         at org.bukkit.plugin.java.PluginClassLoader.loadClass(PluginClassLoader.java:164) ~[paper-api-1.21-R0.1-SNAPSHOT.jar:?]
+	 *         at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526) ~[?:?]
+	 *         ... 15 more
+	 *
+	 */
+
+	/**
 	 * Enables the DiscordNotify Plugin
 	 */
 	private void onStart() {

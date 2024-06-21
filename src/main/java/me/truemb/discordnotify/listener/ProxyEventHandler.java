@@ -16,10 +16,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.Result;
 import org.spicord.bot.DiscordBot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ProxyEventHandler extends UniversalEventHandler {
 
@@ -558,16 +555,21 @@ public class ProxyEventHandler extends UniversalEventHandler {
 	}
 
 	private void onPlayerMessageFeature(UniversalPlayer up, String message) {
+		onPlayerMessageFeature(up, message, null);
+	}
+
+	private void onPlayerMessageFeature(UniversalPlayer up, String message, String mcChannel) {
+		var cfg = DiscordNotifyMain.Singleton.getConfigManager().getConfig();
 		UUID uuid = up.getUUID();
 
-		if(DiscordNotifyMain.Singleton.getConfigManager().getConfig().getBoolean("Options.activateBypassPermission") && up.hasPermission(DiscordNotifyMain.Singleton.getConfigManager().getConfig().getString("Permissions.Bypass.Chat")))
+		if(cfg.getBoolean("Options.activateBypassPermission") && up.hasPermission(cfg.getString("Permissions.Bypass.Chat")))
 			return;
 
-		if(DiscordNotifyMain.Singleton.getConfigManager().getConfig().getBoolean("Options." + FeatureType.Chat.toString() + ".onlyVerified") && !DiscordNotifyMain.Singleton.getVerifyManager().isVerified(up.getUUID()))
+		if(cfg.getBoolean("Options." + FeatureType.Chat.toString() + ".onlyVerified") && !DiscordNotifyMain.Singleton.getVerifyManager().isVerified(up.getUUID()))
 			return;
 
 		//Check if extra Chat is enabled for ChatSyncing
-		if(DiscordNotifyMain.Singleton.getConfigManager().getConfig().getBoolean("Options." + FeatureType.Chat.toString() + ".enableSplittedChat")) {
+		if(cfg.getBoolean("Options." + FeatureType.Chat.toString() + ".enableSplittedChat")) {
 			HashMap<UUID, Boolean> discordChatEnabled = DiscordNotifyMain.Singleton.getDiscordChatEnabled();
 			if (!discordChatEnabled.containsKey(uuid) || !discordChatEnabled.get(uuid))
 				return;
@@ -578,11 +580,32 @@ public class ProxyEventHandler extends UniversalEventHandler {
 		String group = DiscordNotifyMain.Singleton.getPermsAPI().getPrimaryGroup(uuid);
 
 		String channelId = null;
-		if(DiscordNotifyMain.Singleton.getConfigManager().getConfig().getBoolean("Options." + FeatureType.Chat.toString() + ".enableServerSeperatedChat")) {
-			for(String servers : DiscordNotifyMain.Singleton.getConfigManager().getConfig().getConfigurationSection("Options." + FeatureType.Chat.toString() + ".serverSeperatedChat").getKeys(false))
-				if(servers.equalsIgnoreCase(server))
-					channelId = DiscordNotifyMain.Singleton.getConfigManager().getConfig().getString("Options." + FeatureType.Chat.toString() + ".serverSeperatedChat." + servers);
-		}else
+		if (mcChannel != null && cfg.getBoolean("Options.Chat.enableVentureChannelSeperatedChat")) {
+			DiscordNotifyMain.Singleton.getUniversalServer().getLogger().warning("VENTURE CHAT SEPARATED CHANNEL " + mcChannel + " SERVER " + server);
+
+			Set<String> servers = cfg.getConfigurationSection("Options.Chat.ventureChannelSeperatedChat").getKeys(false);
+			for (String cServer : servers)
+				if (cServer.equalsIgnoreCase(server)) {
+					Set<String> mcChannels = cfg.getConfigurationSection("Options.Chat.ventureChannelSeperatedChat." + cServer).getKeys(false);
+
+					for (String cChannel : mcChannels) {
+						DiscordNotifyMain.Singleton.getUniversalServer().getLogger().warning("CHECK SRV " + server + " CHAN " + cChannel + " FOR " + mcChannel);
+						if (cChannel.equalsIgnoreCase(mcChannel)) {
+							channelId = cfg.getString("Options.Chat.ventureChannelSeperatedChat." + cServer + "." + cChannel);
+							DiscordNotifyMain.Singleton.getUniversalServer().getLogger().warning(" ID!! FOUND " + channelId);
+							break;
+						}
+					}
+					break;
+				}
+
+		} else if(cfg.getBoolean("Options." + FeatureType.Chat.toString() + ".enableServerSeperatedChat")) {
+			for(String servers : cfg.getConfigurationSection("Options." + FeatureType.Chat.toString() + ".serverSeperatedChat").getKeys(false))
+				if(servers.equalsIgnoreCase(server)) {
+					channelId = cfg.getString("Options." + FeatureType.Chat.toString() + ".serverSeperatedChat." + servers);
+					break;
+				}
+		} else
 			channelId = DiscordNotifyMain.Singleton.getConfigManager().getChannel(FeatureType.Chat);
 
 		//Server should not send Messages
@@ -595,6 +618,7 @@ public class ProxyEventHandler extends UniversalEventHandler {
 		placeholder.put("UUID", uuid.toString());
 		placeholder.put("group", group == null ? "" : group);
 		placeholder.put("server", server);
+		placeholder.put("mcChannel", mcChannel == null ? "" : mcChannel);
 
 		if(DiscordNotifyMain.Singleton.getUniversalServer().isProxySubServer())
 			return;
@@ -636,16 +660,34 @@ public class ProxyEventHandler extends UniversalEventHandler {
 	@Override
 	public boolean onPlayerMessage(UniversalPlayer up, String message) {
 		//IF FEATURE ENABLED
-		if(!DiscordNotifyMain.Singleton.getUniversalServer().isProxySubServer() && DiscordNotifyMain.Singleton.getConfigManager().isFeatureEnabled(FeatureType.Staff))
+		if(DiscordNotifyMain.Singleton.getConfigManager().isFeatureEnabled(FeatureType.Staff))
 			if(this.onPlayerStaffMessageFeature(up, message))
 				return true;
 
-		if(!DiscordNotifyMain.Singleton.getUniversalServer().isProxySubServer() && DiscordNotifyMain.Singleton.getConfigManager().isFeatureEnabled(FeatureType.Chat))
+		if(DiscordNotifyMain.Singleton.getConfigManager().isFeatureEnabled(FeatureType.Chat)) {
+			var cfg = DiscordNotifyMain.Singleton.getConfigManager().getConfig();
+			if (cfg.getBoolean("Options.Chat.enableVentureChannelSeperatedChat")) {
+				Set<String> servers = cfg.getConfigurationSection("Options.Chat.ventureChannelSeperatedChat").getKeys(false);
+				if (!servers.contains(up.getServer())) return false;
+			}
+
 			this.onPlayerMessageFeature(up, message);
+		}
 
 		return false;
 	}
-	
+
+	@Override
+	public void onPlayerVentureChatMessage(UniversalPlayer up, String channelName, String message) {
+		var cfg = DiscordNotifyMain.Singleton.getConfigManager().getConfig();
+		if (!cfg.getBoolean("Options.Chat.enableVentureChannelSeperatedChat")) return;
+
+		Set<String> servers = cfg.getConfigurationSection("Options.Chat.ventureChannelSeperatedChat").getKeys(false);
+		if (!servers.contains(up.getServer())) return;
+
+		this.onPlayerMessageFeature(up, message, channelName);
+	}
+
 	@Override
 	public void onPlayerDeath(UniversalPlayer up, String deathMessage) {
 		UUID uuid = up.getUUID();

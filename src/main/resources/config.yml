@@ -109,6 +109,14 @@ Options:
     serverSeperatedChat:
       lobby: -1
       freebuild: -1
+    #if enabled, and `ventureChat` is enabled, separate VentureChat channels being sent to discord instead of Channel.Chat
+    enableVentureChannelSeperatedChat: false
+    ventureChannelSeperatedChat:
+      # Server name
+      # If a server is defined here, all channels will not be sent to discord unless the channel is also defined.
+      towny:
+        Global: 123123
+        Network: 123123
     bypassPrefix:
       - '?'
     #if enabled, parse :emote: text into emote mentions to show up properly in discord
@@ -116,6 +124,8 @@ Options:
     filtering:
       #Minecraft->Discord chat filtering
       enabled: true
+      #if enabled, strip color codes from messages, ie `&c`, `§7`, etc
+      stripChatColors: true
       #if enabled, prevent markdown styling like **bold** __underline__ etc
       stripMarkdown: false
       #Prevent Discord @Mentions (still shows original text)

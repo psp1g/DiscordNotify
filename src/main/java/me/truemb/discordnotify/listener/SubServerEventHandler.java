@@ -42,7 +42,10 @@ public class SubServerEventHandler extends UniversalEventHandler {
 	public boolean onPlayerMessage(UniversalPlayer up, String message) {
 		return false;
 	}
-	
+
+	@Override
+	public void onPlayerVentureChatMessage(UniversalPlayer up, String channelName, String message) { }
+
 	@Override
 	public void onPlayerDeath(UniversalPlayer up, String deathMessage) {
 		//IF FEATURE ENABLED
